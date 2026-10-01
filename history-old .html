@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f8f7f2">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Three">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <meta name="description" content="A quiet, simple tracker for yoga, walking and meditation.">
+  <title>Three — Your Daily Practice</title>
+  <style>
+    :root { color-scheme: light; --ink:#232924; --muted:#737970; --line:#e6e8e0; --paper:#f8f7f2; --white:#fff; --green:#245d4a; --green-soft:#e3efe5; --shadow:0 16px 48px rgba(35,49,37,.055); }
+    *{box-sizing:border-box}
+    html { -webkit-tap-highlight-color:transparent; }
+    body { margin:0; min-height:100vh; background:var(--paper); color:var(--ink); font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; line-height:1.45; }
+    button { font:inherit; cursor:pointer; }
+    button:focus-visible, input:focus-visible {outline:3px solid #4c9d81;outline-offset:3px}
+    .shell {max-width:930px;margin:0 auto;padding:48px 26px 70px}
+    header {display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:48px}
+    .brand {font:600 25px/1 Georgia,"Times New Roman",serif;letter-spacing:-1.1px}
+    .brand-mark {display:inline-grid;place-items:center;width:27px;height:27px;border-radius:9px;background:var(--green);color:#fff;font:600 18px/1 Georgia,serif;margin-right:10px;vertical-align:1px}
+    .today-link,.soft-button {border:1px solid var(--line);border-radius:30px;background:#fff;padding:9px 16px;color:#49564c;font-size:13px;font-weight:650}
+    .today-link:hover,.soft-button:hover{background:#f1f5ee}
+    .eyebrow {font-size:12px;text-transform:uppercase;letter-spacing:1.9px;font-weight:750;color:var(--green);margin:0 0 12px}
+    h1 {font:500 clamp(38px,7vw,57px)/1.08 Georgia,"Times New Roman",serif;letter-spacing:-2px;margin:0 0 15px}
+    .subheading {color:var(--muted);font-size:15px;margin:0 0 29px}
+    .progress-section{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:23px}
+    .progress-copy{color:#667167;font-size:14px;margin:0}
+    .progress-copy strong{color:var(--ink)}
+    .progress-pips{display:flex;gap:6px}
+    .progress-pips span{width:35px;height:7px;border-radius:100px;background:#e0e3dc;transition:background .16s}
+    .progress-pips span.filled{background:#4b9476}
+    .activity-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+    .activity {display:flex;min-height:211px;flex-direction:column;align-items:flex-start;justify-content:space-between;text-align:left;border:1.5px solid transparent;border-radius:21px;padding:21px;position:relative;transition:transform .14s,border-color .14s,box-shadow .14s;}
+    .activity:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+    .activity:active{transform:scale(.985)}
+    .activity.yoga{background:#e3ece2}.activity.walk{background:#eae9d9}.activity.meditate{background:#ebe6ef}
+    .activity.yoga.done{border-color:#78a589}.activity.walk.done{border-color:#b2ad73}.activity.meditate.done{border-color:#a58fb6}
+    .activity .icon-wrap{width:46px;height:46px;border-radius:14px;background:#ffffffa9;display:grid;place-items:center;color:#365749}
+    .activity.walk .icon-wrap{color:#777545}.activity.meditate .icon-wrap{color:#6d5980}
+    .activity svg {width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+    .activity-name{display:block;font:500 26px/1.2 Georgia,"Times New Roman",serif;letter-spacing:-.7px;margin-bottom:6px}
+    .activity-label{font-size:13px;color:#617164}
+    .activity.walk .activity-label{color:#817f5d}.activity.meditate .activity-label{color:#796d84}
+    .tick{position:absolute;right:18px;top:18px;width:27px;height:27px;border-radius:50%;border:1.5px solid #a6b1a7;display:grid;place-items:center;color:transparent;background:#ffffff55;transition:background .13s,color .13s}
+    .done .tick{background:#2d6a52;border-color:#2d6a52;color:white}
+    .activity.walk.done .tick{background:#827f48;border-color:#827f48}.activity.meditate.done .tick{background:#79618d;border-color:#79618d}
+    .tick svg{width:16px;height:16px;stroke-width:2.7}
+    .hint{text-align:center;font-size:12px;color:#8a9088;margin-top:16px}
+    .section{margin-top:49px}
+    .section-top {display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:19px}
+    h2{font:500 28px/1.2 Georgia,"Times New Roman",serif;letter-spacing:-.8px;margin:0}
+    .section-note{font-size:13px;color:var(--muted)}
+    .week {display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:9px}
+    .week-day{background:#fff;border:1px solid var(--line);border-radius:15px;min-height:93px;display:flex;flex-direction:column;align-items:center;gap:9px;padding:13px 4px;transition:background .12s}
+    .week-day:hover{background:#f3f7f2}.week-day.selected{border:1.5px solid #3f8567;background:#f2f8f2}
+    .week-day .day-label{font-weight:650;font-size:12px;color:#868b83}
+    .week-day .day-num{font-size:18px;font-weight:660;line-height:1}
+    .week-day .mini-dots{display:flex;gap:3px;min-height:5px}
+    .mini-dots i{width:5px;height:5px;border-radius:50%;background:#d8ddd5}
+    .mini-dots i:nth-child(1).on{background:#5c987a}.mini-dots i:nth-child(2).on{background:#aaa16b}.mini-dots i:nth-child(3).on{background:#a083b3}
+    .calendar-box{border:1px solid var(--line);background:#fff;border-radius:21px;padding:22px 26px 26px}
+    .calendar-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:10px}
+    .calendar-nav strong{font-size:16px;font-weight:720}
+    .calendar-arrows{display:flex;gap:7px}
+    .icon-button{width:34px;height:34px;background:#fff;border:1px solid var(--line);border-radius:11px;display:grid;place-items:center;color:#425347;font-size:19px;line-height:1}
+    .icon-button:hover{background:#f1f6f0}
+    .calendar-head,.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;text-align:center}
+    .calendar-head{font-size:12px;font-weight:650;color:#9a9f97;margin-bottom:7px}
+    .calendar-head span{padding:5px 0}
+    .date-cell{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:49px;border:1px solid transparent;border-radius:12px;background:#fff;color:var(--ink);font-size:13px;padding:6px 0}
+    .date-cell:not(:disabled):hover{background:#f2f6f0}
+    .date-cell.selected{background:#e7f1e8;border-color:#79a38a;font-weight:800}
+    .date-cell.today{color:#1e7051;text-decoration:underline;text-underline-offset:3px;font-weight:800}
+    .date-cell:disabled{cursor:default;color:#c1c6bf;background:transparent}
+    .date-cell .mini-dots i{width:4px;height:4px}
+    .calendar-blank{min-height:49px}
+    .legend {font-size:12px;color:#9a9f97;margin-top:18px;display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+    .legend span{display:inline-flex;align-items:center;gap:5px}
+    .legend i{width:7px;height:7px;border-radius:50%;display:inline-block}
+
+    /* History: rolling daily and weekly stacked activity bars. */
+    .history-card{border:1px solid var(--line);background:var(--white);border-radius:21px;padding:25px 26px 21px}
+    .history-controls{display:flex;gap:4px;background:#f2f4ef;padding:4px;border-radius:14px;flex-shrink:0}
+    .range-button{border:0;background:transparent;color:#6e766e;padding:8px 11px;border-radius:11px;font-size:12px;font-weight:700;white-space:nowrap}
+    .range-button.active{background:white;color:#295d47;box-shadow:0 2px 9px #2d4c3412}
+    .range-button:focus-visible,.history-bar:focus-visible{outline:3px solid #4c9d81;outline-offset:2px}
+    .history-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:0 0 25px}
+    .history-stat{background:#f8f9f5;padding:15px 13px;border-radius:14px;min-width:0}
+    .history-stat-count{font:500 30px/1.1 Georgia,'Times New Roman',serif;color:#28372d;letter-spacing:-1px}
+    .history-stat-label{font-size:11px;margin-top:5px;font-weight:650;color:#748075;display:flex;align-items:center;gap:6px}
+    .stat-dot{width:8px;height:8px;flex-shrink:0;border-radius:50%}
+    .history-chart-heading{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:17px}
+    .history-chart-heading strong{font-size:13px;color:#505d51;font-weight:750}
+    .history-chart-heading span{font-size:11px;color:#9b9f98;text-align:right}
+    .history-chart-scroll{overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;padding-top:4px}
+    .history-graph{display:grid;grid-template-columns:25px minmax(0,1fr);column-gap:9px;padding-right:4px}
+    .history-y-axis{height:180px;position:relative;font-size:10px;color:#a0a69d;font-weight:600}
+    .history-y-tick{position:absolute;right:2px;transform:translateY(-50%)}
+    .history-y-tick:first-child{transform:none}
+    .history-plot{position:relative;height:180px;border-bottom:1px solid #d9dfd7}
+    .history-gridline{position:absolute;left:0;right:0;border-top:1px dashed #e8ebe5;pointer-events:none}
+    .history-gridline:first-child{border-top-style:solid}
+    .history-bars{position:absolute;inset:0;display:grid;grid-template-columns:repeat(var(--bar-count),minmax(0,1fr));gap:7px;align-items:stretch;padding:0 3px}
+    .history-bar{display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;width:100%;height:100%;min-width:0;background:transparent;border:0;padding:0 1px;position:relative}
+    .history-bar:hover{background:#edf2ed70;border-radius:6px 6px 0 0}
+    .history-bar.selected{background:#eaf2ea;border-radius:6px 6px 0 0}
+    .history-stack{display:flex;flex-direction:column-reverse;overflow:hidden;width:100%;max-width:36px;height:100%;margin:0 auto;border-radius:5px 5px 0 0;pointer-events:none}
+    .history-segment{display:block;width:100%;min-height:0;flex-shrink:0}
+    .history-segment.yoga{background:#5c987a}.history-segment.walking{background:#aaa16b}.history-segment.meditation{background:#a083b3}
+    .history-bar.selected .history-stack{filter:drop-shadow(0 0 2px #3568485e)}
+    .history-x-labels{display:grid;grid-template-columns:repeat(var(--bar-count),minmax(0,1fr));gap:7px;margin-left:0;padding:8px 3px 0;color:#969d93;font-weight:650;font-size:10px;text-align:center}
+    .history-x-labels span{overflow:visible;white-space:nowrap}
+    .history-x-labels .selected{color:#245d4a}
+    .history-graph[data-range='30']{min-width:580px}
+    .history-graph[data-range='90']{min-width:480px}
+    .history-detail{border-top:1px solid #eff0eb;margin-top:16px;padding-top:14px;min-height:57px;display:flex;gap:9px 20px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .history-detail-title{font-size:12px;color:#344638;font-weight:720}
+    .history-detail-items{display:flex;flex-wrap:wrap;gap:8px 13px;font-size:11px;color:#8b9389}
+    .history-detail-items span{display:flex;align-items:center;gap:5px}
+    .history-detail-items .active{color:#414f42;font-weight:650}
+    .history-empty{position:absolute;top:39%;left:0;right:0;text-align:center;font-size:12px;color:#9aa69a;pointer-events:none}
+    @media(max-width:680px){.history-card{padding:20px 15px}.history-section-top{align-items:flex-start;flex-direction:column}.history-controls{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}.range-button{padding:9px 8px}.history-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:20px}.history-stat-count{font-size:29px}.history-stat{padding:13px 13px}.history-graph[data-range='90']{min-width:480px}.history-graph[data-range='30']{min-width:580px}.history-bars,.history-x-labels{gap:5px}.history-chart-heading span{max-width:145px}}
+    footer{display:flex;gap:15px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);margin-top:45px;padding-top:23px}
+    .privacy{font-size:12px;color:#92988f;max-width:430px;margin:0}
+    .backup-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .backup-actions button{border:0;background:none;color:#547661;font-size:12px;font-weight:650;padding:8px 4px;text-decoration:underline;text-underline-offset:3px}
+    .status{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);color:#fff;background:#234d3d;padding:10px 17px;border-radius:100px;font-size:13px;box-shadow:0 10px 30px #234d3d3d;max-width:calc(100% - 32px);text-align:center;opacity:0;pointer-events:none;transition:opacity .2s}
+    .status.visible{opacity:1}
+    @media(max-width:680px){.shell{padding:30px 18px 55px}header{margin-bottom:42px}h1{font-size:43px}.activity-grid{grid-template-columns:1fr;gap:10px}.activity{min-height:102px;padding:16px 18px;flex-direction:row;align-items:center;justify-content:flex-start;gap:17px;border-radius:17px}.activity .icon-wrap{width:55px;height:55px;flex-shrink:0}.activity-name{font-size:25px;margin-bottom:2px}.tick{position:static;margin-left:auto;flex-shrink:0}.week{gap:5px}.week-day{min-height:86px;padding:11px 2px}.calendar-box{padding:18px 13px 21px}.date-cell{min-height:43px}.calendar-blank{min-height:43px}.section{margin-top:40px}footer{flex-direction:column;align-items:flex-start}}
+    @media(max-width:380px){h1{font-size:37px}.week-day .day-num{font-size:16px}.week-day{min-height:80px}.calendar-box{padding:16px 9px}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div class="brand"><span class="brand-mark" aria-hidden="true">3</span>three.</div>
+    <button class="today-link" id="todayButton" type="button">Back to today ↗</button>
+  </header>
+
+  <main>
+    <p class="eyebrow" id="dateEyebrow">TODAY</p>
+    <h1 id="greeting">A little every day.</h1>
+    <p class="subheading">Three practices. No targets, no pressure.</p>
+    <div class="progress-section">
+      <p class="progress-copy" id="progressText" aria-live="polite"><strong>0 of 3</strong> activities recorded</p>
+      <div class="progress-pips" id="progressPips" aria-hidden="true"><span></span><span></span><span></span></div>
+    </div>
+    <div class="activity-grid" id="activities" aria-label="Record your three activities">
+      <button class="activity yoga" type="button" data-activity="yoga" aria-pressed="false">
+        <span class="icon-wrap" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="4" r="2"/><path d="M12 8v5m-4-3 4 2 4-2M7 19l5-6 5 6M4 17l4 2m12-2-4 2M5 21h14"/></svg></span>
+        <span class="activity-copy"><span class="activity-name">Yoga</span><span class="activity-label">Tap when you practise</span></span>
+        <span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></span>
+      </button>
+      <button class="activity walk" type="button" data-activity="walking" aria-pressed="false">
+        <span class="icon-wrap" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="14" cy="4" r="2"/><path d="m11 21 2-6-3-4-3 4-4 2m7-6 3-3 4 2 3 1m-7 4 5 2 2 4M8 8l3-1 3 3"/></svg></span>
+        <span class="activity-copy"><span class="activity-name">Walking</span><span class="activity-label">Any distance counts</span></span>
+        <span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></span>
+      </button>
+      <button class="activity meditate" type="button" data-activity="meditation" aria-pressed="false">
+        <span class="icon-wrap" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="4" r="2"/><path d="M12 8v5m-5 0 5 2 5-2M9 10l-4 5 5 1 2 4 2-4 5-1-4-5M5 21h14"/></svg></span>
+        <span class="activity-copy"><span class="activity-name">Meditation</span><span class="activity-label">A moment of stillness</span></span>
+        <span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></span>
+      </button>
+    </div>
+    <p class="hint">Tap again to undo. Your entries save automatically.</p>
+
+    <section class="section" aria-labelledby="weekTitle">
+      <div class="section-top"><h2 id="weekTitle">This week</h2><span class="section-note" id="weekSummary"></span></div>
+      <div class="week" id="week" aria-label="Days in the selected week"></div>
+    </section>
+
+
+    <section class="section" aria-labelledby="trendTitle">
+      <div class="section-top history-section-top">
+        <h2 id="trendTitle">Practice history</h2>
+        <div class="history-controls" role="group" aria-label="History time range">
+          <button class="range-button active" type="button" data-range="7" aria-pressed="true">7 days</button>
+          <button class="range-button" type="button" data-range="30" aria-pressed="false">30 days</button>
+          <button class="range-button" type="button" data-range="90" aria-pressed="false">90 days</button>
+        </div>
+      </div>
+      <div class="history-card">
+        <div class="history-summary" id="historySummary" aria-label="Activity totals for selected period"></div>
+        <div class="history-chart-heading"><strong id="chartHeading">Activities per day</strong><span id="chartHint">Tap a bar for details</span></div>
+        <div class="history-chart-scroll" id="historyChartScroll" tabindex="0" aria-label="Activity history chart. Scroll horizontally to see more dates when needed.">
+          <div class="history-graph" id="historyGraph" data-range="7">
+            <div class="history-y-axis" id="historyYAxis" aria-hidden="true"></div>
+            <div class="history-plot" id="historyPlot" role="group" aria-label="Activity history bars"></div>
+            <div aria-hidden="true"></div>
+            <div class="history-x-labels" id="historyXLabels" aria-hidden="true"></div>
+          </div>
+        </div>
+        <div class="history-detail" id="historyDetail" aria-live="polite"></div>
+        <div class="legend" aria-label="Chart colours"><span><i style="background:#5c987a"></i> Yoga</span><span><i style="background:#aaa16b"></i> Walking</span><span><i style="background:#a083b3"></i> Meditation</span></div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="historyTitle">
+      <div class="section-top"><h2 id="historyTitle">Your calendar</h2><span class="section-note">Select a day to edit</span></div>
+      <div class="calendar-box">
+        <div class="calendar-nav"><strong id="monthLabel"></strong><div class="calendar-arrows"><button class="icon-button" id="prevMonth" type="button" aria-label="Previous month">‹</button><button class="icon-button" id="nextMonth" type="button" aria-label="Next month">›</button></div></div>
+        <div class="calendar-head" aria-hidden="true"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>
+        <div class="calendar-grid" id="calendar"></div>
+        <div class="legend" aria-label="Activity colours"><span><i style="background:#5c987a"></i> Yoga</span><span><i style="background:#aaa16b"></i> Walking</span><span><i style="background:#a083b3"></i> Meditation</span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p class="privacy">Private by default: records are saved only in this browser, not on a server. Export a backup if you may change devices or clear browser data.</p>
+    <div class="backup-actions"><button type="button" id="exportButton">Export backup</button><button type="button" id="importButton">Restore backup</button><input type="file" id="importFile" accept=".json,application/json" hidden></div>
+  </footer>
+</div>
+<div class="status" id="status" role="status" aria-live="polite"></div>
+<script>
+(() => {
+  'use strict';
+  const STORAGE_KEY = 'three.daily.practice.v1';
+  const TYPES = ['yoga', 'walking', 'meditation'];
+  const state = {entries: {}, selected: new Date(), month: new Date()};
+  state.selected.setHours(12,0,0,0);
+  state.month = new Date(state.selected.getFullYear(),state.selected.getMonth(),1,12);
+
+  const $ = id => document.getElementById(id);
+  const today = () => {const d = new Date(); d.setHours(12,0,0,0); return d;};
+  const key = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const dateForKey = k => {const [y,m,d]=k.split('-').map(Number); return new Date(y,m-1,d,12);};
+  const addDays = (d,n) => new Date(d.getFullYear(),d.getMonth(),d.getDate()+n,12);
+  const sameDay = (a,b) => key(a)===key(b);
+  const isValidKey = k => /^\d{4}-\d{2}-\d{2}$/.test(k) && key(dateForKey(k))===k;
+  const safeEntries = value => {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid backup format');
+    const out = {};
+    for (const [date, activities] of Object.entries(value)) {
+      if (!isValidKey(date) || !activities || typeof activities !== 'object' || Array.isArray(activities)) continue;
+      const record = {};
+      for (const activity of TYPES) if (activities[activity] === true) record[activity] = true;
+      if (Object.keys(record).length) out[date] = record;
+    }
+    return out;
+  };
+  try {state.entries = safeEntries(JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'));} catch(e) {state.entries = {};}
+
+  const record = d => state.entries[key(d)] || {};
+  const count = d => TYPES.filter(type => record(d)[type]).length;
+  const dotMarkup = d => `<span class="mini-dots" aria-hidden="true">${TYPES.map(type=>`<i class="${record(d)[type]?'on':''}"></i>`).join('')}</span>`;
+  const persist = () => {try {localStorage.setItem(STORAGE_KEY,JSON.stringify(state.entries)); return true;} catch(e) {toast('Could not save. Please check browser storage.'); return false;}};
+  let toastTimer;
+  function toast(message) {const el=$('status');el.textContent=message;el.classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('visible'),2600);}
+  function selectDate(d) {state.selected=new Date(d.getFullYear(),d.getMonth(),d.getDate(),12);state.month=new Date(d.getFullYear(),d.getMonth(),1,12);render();}
+
+  function renderHeader() {
+    const selected=state.selected, now=today(), c=count(selected);
+    $('dateEyebrow').textContent = sameDay(selected,now) ? new Intl.DateTimeFormat('en-GB',{weekday:'long',day:'numeric',month:'long'}).format(now).toUpperCase() : new Intl.DateTimeFormat('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(selected).toUpperCase();
+    $('greeting').textContent = sameDay(selected,now) ? 'A little every day.' : 'One day at a time.';
+    $('todayButton').hidden = sameDay(selected,now);
+    $('progressText').innerHTML = `<strong>${c} of 3</strong> ${c===3?'— all three recorded':'activities recorded'}`;
+    [...$('progressPips').children].forEach((el,i)=>el.classList.toggle('filled',i<c));
+    document.querySelectorAll('.activity').forEach(btn=>{
+      const done=Boolean(record(selected)[btn.dataset.activity]);btn.classList.toggle('done',done);btn.setAttribute('aria-pressed',String(done));
+      btn.querySelector('.activity-label').textContent = done?'Recorded ✓': ({yoga:'Tap when you practise',walking:'Any distance counts',meditation:'A moment of stillness'})[btn.dataset.activity];
+      btn.setAttribute('aria-label',`${btn.querySelector('.activity-name').textContent}: ${done?'recorded, tap to undo':'not recorded, tap to record'}`);
+    });
+  }
+
+  function renderWeek(){
+    const selected=state.selected, monday=addDays(selected,-((selected.getDay()+6)%7));
+    const days=Array.from({length:7},(_,i)=>addDays(monday,i));
+    const total=days.reduce((sum,d)=>sum+count(d),0);
+    $('weekTitle').textContent=sameDay(selected,today())?'This week':'Selected week';
+    $('weekSummary').textContent=`${total} ${total===1?'activity':'activities'} recorded`;
+    $('week').innerHTML='';
+    days.forEach(d=>{
+      const btn=document.createElement('button');btn.type='button';btn.className=`week-day${sameDay(d,selected)?' selected':''}`;
+      btn.setAttribute('aria-label',`${new Intl.DateTimeFormat('en-GB',{weekday:'long',day:'numeric',month:'long'}).format(d)}: ${count(d)} of 3 recorded`);
+      btn.setAttribute('aria-pressed',sameDay(d,selected)?'true':'false');
+      btn.innerHTML=`<span class="day-label">${new Intl.DateTimeFormat('en-GB',{weekday:'short'}).format(d).slice(0,1)}</span><span class="day-num">${d.getDate()}</span>${dotMarkup(d)}`;
+      btn.addEventListener('click',()=>selectDate(d));$('week').appendChild(btn);
+    });
+  }
+
+  function renderCalendar(){
+    const base=state.month,year=base.getFullYear(),month=base.getMonth();
+    $('monthLabel').textContent=new Intl.DateTimeFormat('en-GB',{month:'long',year:'numeric'}).format(base);
+    const firstOffset=(new Date(year,month,1).getDay()+6)%7;
+    const daysInMonth=new Date(year,month+1,0).getDate();
+    const calendar=$('calendar');calendar.innerHTML='';
+    for(let i=0;i<firstOffset;i++){const blank=document.createElement('span');blank.className='calendar-blank';blank.setAttribute('aria-hidden','true');calendar.appendChild(blank);}
+    for(let day=1;day<=daysInMonth;day++){
+      const d=new Date(year,month,day,12);const btn=document.createElement('button');btn.type='button';
+      btn.className=`date-cell${sameDay(d,state.selected)?' selected':''}${sameDay(d,today())?' today':''}`;
+      btn.innerHTML=`<span>${day}</span>${dotMarkup(d)}`;
+      btn.setAttribute('aria-label',`${new Intl.DateTimeFormat('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d)}: ${count(d)} of 3 recorded`);
+      btn.setAttribute('aria-pressed',sameDay(d,state.selected)?'true':'false');
+      btn.addEventListener('click',()=>selectDate(d));calendar.appendChild(btn);
+    }
+  }
+
+  const history = {range:7, selectedBar:null};
+  const formatShortDate = d => new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short'}).format(d);
+  const formatLongDate = d => new Intl.DateTimeFormat('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'}).format(d);
+  function historyBins() {
+    const end=today(), start=addDays(end,1-history.range), bins=[];
+    if (history.range!==90) {
+      for(let d=start; d<=end; d=addDays(d,1)) {
+        const r=record(d);
+        bins.push({id:key(d),start:d,end:d,counts:TYPES.map(type=>r[type]?1:0)});
+      }
+    } else {
+      // Aggregate the rolling 90 days by calendar week (Monday–Sunday).
+      let monday=addDays(start,-((start.getDay()+6)%7));
+      while(monday<=end) {
+        const first=monday<start?start:monday,last=addDays(monday,6)>end?end:addDays(monday,6);
+        const counts=TYPES.map(type=>{
+          let total=0;
+          for(let d=first; d<=last; d=addDays(d,1)) if(record(d)[type]) total++;
+          return total;
+        });
+        bins.push({id:key(monday),start:first,end:last,counts});
+        monday=addDays(monday,7);
+      }
+    }
+    return bins;
+  }
+  function renderHistoryDetail(bin) {
+    const detail=$('historyDetail');
+    detail.replaceChildren();
+    if(!bin){detail.textContent='Record an activity and it will appear here.';return;}
+    const total=bin.counts.reduce((a,b)=>a+b,0),weekly=history.range===90;
+    const title=document.createElement('strong');title.className='history-detail-title';
+    title.textContent=`${weekly?(formatShortDate(bin.start)+' – '+formatShortDate(bin.end)):formatLongDate(bin.start)} · ${total} ${total===1?'activity':'activities'}`;
+    detail.appendChild(title);
+    const items=document.createElement('div');items.className='history-detail-items';
+    const names=['Yoga','Walking','Meditation'];
+    const colors=['#5c987a','#aaa16b','#a083b3'];
+    TYPES.forEach((_,i)=>{
+      const item=document.createElement('span');item.className=bin.counts[i]?'active':'';
+      const dot=document.createElement('i');dot.className='stat-dot';dot.style.background=bin.counts[i]?colors[i]:'#d6dbd3';
+      item.append(dot, document.createTextNode(`${names[i]} ${weekly?bin.counts[i]:(bin.counts[i]?'✓':'–')}`));
+      items.appendChild(item);
+    });
+    detail.appendChild(items);
+  }
+  function renderHistory() {
+    const bins=historyBins(),isWeekly=history.range===90,max=isWeekly?21:3;
+    const totals=TYPES.map(type=>{
+      let total=0;
+      for(let d=addDays(today(),1-history.range);d<=today();d=addDays(d,1)) if(record(d)[type])total++;
+      return total;
+    });
+    let daysPractised=0;
+    for(let d=addDays(today(),1-history.range);d<=today();d=addDays(d,1)) if(count(d)>0)daysPractised++;
+    const statLabels=['Days practised','Yoga','Walking','Meditation'];
+    const statColors=['#536c58','#5c987a','#aaa16b','#a083b3'];
+    const summary=$('historySummary');summary.replaceChildren();
+    [daysPractised,...totals].forEach((n,i)=>{
+      const item=document.createElement('div');item.className='history-stat';
+      const number=document.createElement('div');number.className='history-stat-count';number.textContent=n;
+      const label=document.createElement('div');label.className='history-stat-label';
+      const dot=document.createElement('i');dot.className='stat-dot';dot.style.background=statColors[i];
+      label.append(dot,document.createTextNode(statLabels[i]));item.append(number,label);summary.appendChild(item);
+    });
+    document.querySelectorAll('.range-button').forEach(btn=>{const active=Number(btn.dataset.range)===history.range;btn.classList.toggle('active',active);btn.setAttribute('aria-pressed',String(active));});
+    $('chartHeading').textContent=isWeekly?'Activities per week':'Activities per day';
+    $('chartHint').textContent=history.range===7?'Tap a bar for details':'Tap a bar · swipe to see more';
+    const graph=$('historyGraph');graph.dataset.range=String(history.range);
+    const axis=$('historyYAxis');axis.replaceChildren();
+    const plot=$('historyPlot');plot.replaceChildren();
+    [3,2,1,0].forEach((n,i)=>{
+      const tick=document.createElement('span');tick.className='history-y-tick';tick.style.top=`${i*100/3}%`;tick.textContent=isWeekly?n*7:n;axis.appendChild(tick);
+      const line=document.createElement('div');line.className='history-gridline';line.style.top=`${i*100/3}%`;plot.appendChild(line);
+    });
+    const bars=document.createElement('div');bars.className='history-bars';bars.style.setProperty('--bar-count',bins.length);
+    const labels=$('historyXLabels');labels.replaceChildren();labels.style.setProperty('--bar-count',bins.length);
+    if(!bins.some(bin=>bin.counts.some(Boolean))){
+      const empty=document.createElement('div');empty.className='history-empty';empty.textContent='Your activity history will appear here';plot.appendChild(empty);
+    }
+    if(!bins.some(bin=>bin.id===history.selectedBar)){
+      const latest=bins.slice().reverse().find(bin=>bin.counts.some(Boolean));
+      history.selectedBar=(latest||bins[bins.length-1]).id;
+    }
+    bins.forEach((bin,i)=>{
+      const total=bin.counts.reduce((a,b)=>a+b,0),weekly=isWeekly;
+      const selected=bin.id===history.selectedBar;
+      const btn=document.createElement('button');btn.type='button';btn.className=`history-bar${selected?' selected':''}`;
+      btn.setAttribute('aria-pressed',String(selected));
+      btn.setAttribute('aria-label',`${weekly?'Week '+formatShortDate(bin.start)+' to '+formatShortDate(bin.end):formatLongDate(bin.start)}: ${bin.counts[0]} yoga, ${bin.counts[1]} walking, ${bin.counts[2]} meditation`);
+      btn.title=btn.getAttribute('aria-label');
+      const stack=document.createElement('span');stack.className='history-stack';
+      TYPES.forEach((type,j)=>{
+        if(!bin.counts[j])return;
+        const segment=document.createElement('span');segment.className=`history-segment ${type}`;
+        segment.style.height=`${bin.counts[j]/max*100}%`;stack.appendChild(segment);
+      });
+      btn.appendChild(stack);
+      btn.addEventListener('click',()=>{history.selectedBar=bin.id;renderHistory();});
+      bars.appendChild(btn);
+      const label=document.createElement('span');
+      label.className=selected?'selected':'';
+      if(history.range===7)label.textContent=new Intl.DateTimeFormat('en-GB',{weekday:'short'}).format(bin.start).slice(0,2);
+      else if(history.range===30)label.textContent=i%5===0||i===bins.length-1?String(bin.start.getDate()):'';
+      else label.textContent=i%3===0||i===bins.length-1?formatShortDate(bin.start):'';
+      labels.appendChild(label);
+    });
+    plot.appendChild(bars);
+    renderHistoryDetail(bins.find(b=>b.id===history.selectedBar));
+  }
+  document.querySelectorAll('.range-button').forEach(btn=>btn.addEventListener('click',()=>{
+    history.range=Number(btn.dataset.range);history.selectedBar=null;
+    $('historyChartScroll').scrollLeft=0;
+    renderHistory();
+  }));
+
+  function render(){renderHeader();renderWeek();renderHistory();renderCalendar();}
+  document.querySelectorAll('.activity').forEach(button=>button.addEventListener('click',()=>{
+    const date=key(state.selected),type=button.dataset.activity;
+    const previous=structuredClone(state.entries);
+    if(!state.entries[date])state.entries[date]={};
+    if(state.entries[date][type])delete state.entries[date][type];else state.entries[date][type]=true;
+    if(!Object.keys(state.entries[date]).length)delete state.entries[date];
+    if(!persist())state.entries=previous;
+    render();
+  }));
+  $('todayButton').addEventListener('click',()=>selectDate(today()));
+  $('prevMonth').addEventListener('click',()=>{state.month=new Date(state.month.getFullYear(),state.month.getMonth()-1,1,12);renderCalendar();});
+  $('nextMonth').addEventListener('click',()=>{state.month=new Date(state.month.getFullYear(),state.month.getMonth()+1,1,12);renderCalendar();});
+  $('exportButton').addEventListener('click',()=>{
+    const blob=new Blob([JSON.stringify({app:'three',version:1,exportedAt:new Date().toISOString(),entries:state.entries},null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`three-backup-${key(today())}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    toast('Backup exported');
+  });
+  $('importButton').addEventListener('click',()=>$('importFile').click());
+  $('importFile').addEventListener('change',async event=>{
+    const file=event.target.files[0];if(!file)return;
+    try{
+      if(file.size>5_000_000)throw new Error('File too large');
+      const data=JSON.parse(await file.text());
+      if(data.app!=='three'||data.version!==1||!data.entries)throw new Error('This is not a Three backup.');
+      const incoming=safeEntries(data.entries);
+      if(!confirm(`Restore ${Object.keys(incoming).length} recorded days from this backup? Your existing entries will be merged; backup values take precedence on matching days.`))return;
+      const previous=structuredClone(state.entries);
+      state.entries={...state.entries,...incoming};
+      if(!persist())state.entries=previous;else toast('Backup restored');
+      render();
+    }catch(e){toast(e instanceof SyntaxError?'Could not read that backup file.':e.message||'Could not restore backup.');}
+    finally{event.target.value='';}
+  });
+  render();
+})();
+</script>
+</body>
+</html>
